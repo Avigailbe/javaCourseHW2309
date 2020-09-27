@@ -55,5 +55,34 @@ public class WordUtils {
 
        return results;
     }
+
+    @SneakyThrows
+    public static List<String> xMostPopular(File file, int x) {
+
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+
+        //get words from file
+        Stream<String> items = reader.lines()
+                .flatMap(line -> Arrays.stream(line.split(" ")));
+
+        //add words to list
+        List<String> words = items.collect(Collectors.toList());
+
+        //add words and amount of duplicates to map
+        Map<String, Long> dups =
+                words.stream()
+                        .collect(Collectors
+                                .groupingBy(Function
+                                        .identity(),Collectors.counting()));
+        //get all that match the inputted x (value) and add the word (key) to list
+        List<String>results = dups.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed() )
+                .limit(x)
+                .map(map->map.getKey())
+                .collect(Collectors.toList());
+
+        return results;
+    }
 }
 
